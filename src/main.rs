@@ -1,3 +1,5 @@
+use clap::Parser;
+
 const HWCAP_FP: u64 = 1 << 0;
 const HWCAP_ASIMD: u64 = 1 << 1;
 const HWCAP_EVTSTRM: u64 = 1 << 2;
@@ -174,18 +176,33 @@ fn hwcap2() -> Vec<[&'static str; 2]> {
         .collect()
 }
 
+#[derive(Parser)]
+struct Cli {
+    #[arg(short, long)]
+    table: bool,
+}
+
 fn main() {
-    let mut hwcap_table = comfy_table::Table::default();
-    for cap in hwcap() {
-        hwcap_table.add_row(cap);
+    let cli = Cli::parse();
+
+    if cli.table {
+        let mut hwcap_table = comfy_table::Table::default();
+        for cap in hwcap() {
+            hwcap_table.add_row(cap);
+        }
+        println!("{hwcap_table}");
+
+        let mut hwcap2_table = comfy_table::Table::default();
+        for cap in hwcap2() {
+            hwcap2_table.add_row(cap);
+        }
+        println!("{hwcap2_table}");
+    } else {
+        for cap in hwcap() {
+            println!("{} {}", cap[0], cap[1])
+        }
+        for cap in hwcap2() {
+            println!("{} {}", cap[0], cap[1])
+        }
     }
-
-    println!("{hwcap_table}");
-
-    let mut hwcap2_table = comfy_table::Table::default();
-    for cap in hwcap2() {
-        hwcap2_table.add_row(cap);
-    }
-
-    println!("{hwcap2_table}");
 }
